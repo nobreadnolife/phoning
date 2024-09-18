@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png" sizes="32x32"> <!-- 添加favicon -->
     <title>Phoning头像生成器</title>
     <style>
         /* 引入“天王星像素体”字体 */
         @font-face {
             font-family: 'TianWangXingPixel';
-            src: url('TianWangXing-Pixel-Font.ttf') format('truetype');
+            src: url('TianWangXing-Pixel-Font.woff2') format('woff2'),
+                 url('TianWangXing-Pixel-Font.woff') format('woff'),
+                 url('TianWangXing-Pixel-Font.ttf') format('truetype');
         }
 
         body {
@@ -244,7 +247,9 @@
                     <style>
                         @font-face {
                             font-family: 'TianWangXingPixel';
-                            src: url('TianWangXing-Pixel-Font.ttf') format('truetype'); /* 确保在新窗口中引入字体 */
+                            src: url('TianWangXing-Pixel-Font.woff2') format('woff2'),
+                                 url('TianWangXing-Pixel-Font.woff') format('woff'),
+                                 url('TianWangXing-Pixel-Font.ttf') format('truetype'); /* 确保在新窗口中引入字体 */
                         }
                         body {
                             font-family: 'TianWangXingPixel', sans-serif; /* 统一字体 */

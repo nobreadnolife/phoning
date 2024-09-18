@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phoning头像生成器</title>
+    <title>Phoning Avatar Generator</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <style>
         /* 引入“天王星像素体”字体 */
@@ -120,14 +120,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>Phoning头像生成器</h1>
-        <label for="upload" class="upload-label">选择图片</label>
+        <h1>Phoning Avatar Generator</h1>
+        <label for="upload" class="upload-label">Choose an Image</label>
         <input type="file" id="upload" accept="image/*">
         <div class="image-container" id="image-container">
             <img id="profile-image" src="" alt="" />
-            <img id="overlay-image" src="green-border.png" alt="绿色边框" />
+            <img id="overlay-image" src="green-border.png" alt="Green Border" />
         </div>
-        <button id="generate-button" class="button" disabled>生成头像</button>
+        <button id="generate-button" class="button" disabled>Generate Avatar</button>
     </div>
     <canvas id="canvas" style="display: none;"></canvas>
 
@@ -234,11 +234,11 @@
             const newWindow = window.open();
             newWindow.document.write(`
                 <!DOCTYPE html>
-                <html lang="zh">
+                <html lang="en">
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Phoning生成的头像</title>
+                    <title>Generated Phoning Avatar</title>
                     <style>
                         @font-face {
                             font-family: 'TianWangXingPixel';
@@ -278,8 +278,8 @@
                 </head>
                 <body>
                     <div class="avatar-container">
-                        <img src="${dataUrl}" alt="生成的头像">
-                        <p>长按图片保存头像</p>
+                        <img src="${dataUrl}" alt="Generated Avatar">
+                        <p>Long press to save the avatar</p>
                     </div>
                 </body>
                 </html>

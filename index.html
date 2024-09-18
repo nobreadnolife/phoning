@@ -77,7 +77,6 @@
             color: white;
             padding: 10px 20px;
             text-align: center;
-            text-decoration: none;
             font-size: 16px;
             margin: 10px 0;
             cursor: pointer;
@@ -123,7 +122,7 @@
         <label for="upload" class="upload-label">选择图片</label>
         <input type="file" id="upload" accept="image/*">
         <div class="image-container" id="image-container">
-            <img id="profile-image" src="" alt="" />
+            <img id="profile-image" src="" alt="头像" />
             <img id="overlay-image" src="green-border.png" alt="绿色边框" />
         </div>
         <button id="generate-button" class="button" disabled>生成头像</button>
@@ -143,7 +142,7 @@
 
         const containerSize = 300; // 显示容器的尺寸
         const canvasSize = 1000; // Canvas实际尺寸，减少背景大小
-        const avatarSize = 900;   // 头像实际尺寸，增大头像尺寸
+        const avatarSize = 700;   // 头像实际尺寸，稍微缩小
         const dpr = window.devicePixelRatio || 1; // 设备像素比
 
         // 设置Canvas尺寸并考虑设备像素比
@@ -153,6 +152,9 @@
 
         uploadInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
             const reader = new FileReader();
             reader.onload = function (e) {
                 profileImage.src = e.target.result;
@@ -229,102 +231,117 @@
         generateButton.addEventListener('click', generateImage);
 
         function generateImage() {
-            const dataUrl = combineImages();
-            const newWindow = window.open();
-            newWindow.document.write(\`
-                <!DOCTYPE html>
-                <html lang="zh">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Phoning生成的头像</title>
-                    <style>
-                        @font-face {
-                            font-family: 'TianWangXingPixel';
-                            src: url('TianWangXing-Pixel-Font.woff2') format('woff2'),
-                                 url('TianWangXing-Pixel-Font.woff') format('woff'),
-                                 url('TianWangXing-Pixel-Font.ttf') format('truetype');
-                        }
-                        body {
-                            font-family: 'TianWangXingPixel', sans-serif;
-                            background-color: #f0f0f0;
-                            margin: 0;
-                            padding: 20px;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            min-height: 100vh;
-                            text-align: center;
-                        }
-                        .avatar-container {
-                            background-color: white;
-                            padding: 20px;
-                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                            max-width: 100%;
-                        }
-                        img {
-                            max-width: 100%;
-                            height: auto;
-                            margin-bottom: 20px;
-                        }
-                        p {
-                            color: #666;
-                            margin-bottom: 20px;
-                            font-family: 'TianWangXingPixel', sans-serif;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="avatar-container">
-                        <img src="\${dataUrl}" alt="生成的头像">
-                        <p>长按图片保存头像</p>
-                    </div>
-                </body>
-                </html>
-            \`);
-            newWindow.document.close();
+            combineImages().then((dataUrl) => {
+                const newWindow = window.open();
+                newWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="zh">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Phoning生成的头像</title>
+                        <style>
+                            @font-face {
+                                font-family: 'TianWangXingPixel';
+                                src: url('TianWangXing-Pixel-Font.woff2') format('woff2'),
+                                     url('TianWangXing-Pixel-Font.woff') format('woff'),
+                                     url('TianWangXing-Pixel-Font.ttf') format('truetype');
+                            }
+                            body {
+                                font-family: 'TianWangXingPixel', sans-serif;
+                                background-color: #ffffff; /* 网页背景为白色 */
+                                margin: 0;
+                                padding: 20px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                text-align: center;
+                            }
+                            .avatar-container {
+                                background-color: white;
+                                padding: 20px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                                max-width: 100%;
+                            }
+                            img {
+                                max-width: 100%;
+                                height: auto;
+                                margin-bottom: 20px;
+                                background-color: black; /* 确保图片背景为黑色 */
+                            }
+                            p {
+                                color: #666;
+                                margin-bottom: 20px;
+                                font-family: 'TianWangXingPixel', sans-serif;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="avatar-container">
+                            <img src="${dataUrl}" alt="生成的头像">
+                            <p>长按图片保存头像</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                newWindow.document.close();
+            }).catch((error) => {
+                console.error('生成头像时出错:', error);
+                alert('生成头像时出错，请检查控制台。');
+            });
         }
 
-        function combineImages() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        async function combineImages() {
+            return new Promise((resolve, reject) => {
+                try {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 设置白色背景
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvasSize, canvasSize);
+                    // 设置黑色背景
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-            // 计算头像在画布中的位置，使其居中并留有较小的边距
-            const centerX = canvasSize / 2;
-            const centerY = canvasSize / 2;
-            const avatarRadius = avatarSize / 2;
+                    // 计算头像的中心位置和半径
+                    const centerX = canvasSize / 2;
+                    const centerY = canvasSize / 2;
+                    const avatarRadius = avatarSize / 2;
 
-            // 绘制圆形剪裁区域
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, avatarRadius, 0, Math.PI * 2);
-            ctx.clip();
+                    // 绘制圆形剪裁区域
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, avatarRadius, 0, Math.PI * 2);
+                    ctx.clip();
 
-            const imgWidth = profileImage.naturalWidth;
-            const imgHeight = profileImage.naturalHeight;
+                    const imgWidth = profileImage.naturalWidth;
+                    const imgHeight = profileImage.naturalHeight;
 
-            // 计算缩放比例，考虑Canvas与容器尺寸的比例
-            const scaleFactor = avatarSize / containerSize;
+                    // 计算缩放比例，考虑Canvas与容器尺寸的比例
+                    const scaleFactor = avatarSize / containerSize;
 
-            const scaledWidth = imgWidth * scale * scaleFactor;
-            const scaledHeight = imgHeight * scale * scaleFactor;
-            const drawX = centerX - scaledWidth / 2 + translateX * scaleFactor;
-            const drawY = centerY - scaledHeight / 2 + translateY * scaleFactor;
+                    const scaledWidth = imgWidth * scale * scaleFactor;
+                    const scaledHeight = imgHeight * scale * scaleFactor;
+                    const drawX = centerX - scaledWidth / 2 + translateX * scaleFactor;
+                    const drawY = centerY - scaledHeight / 2 + translateY * scaleFactor;
 
-            ctx.drawImage(profileImage, drawX, drawY, scaledWidth, scaledHeight);
+                    ctx.drawImage(profileImage, drawX, drawY, scaledWidth, scaledHeight);
 
-            ctx.restore();
+                    ctx.restore();
 
-            // 绘制边框
-            const overlayImage = new Image();
-            overlayImage.src = document.getElementById('overlay-image').src;
-            ctx.drawImage(overlayImage, centerX - avatarRadius, centerY - avatarRadius, avatarSize, avatarSize);
-
-            return canvas.toDataURL('image/jpeg'); // 输出为JPEG格式
+                    // 绘制边框
+                    const overlayImage = new Image();
+                    overlayImage.src = document.getElementById('overlay-image').src;
+                    overlayImage.onload = () => {
+                        ctx.drawImage(overlayImage, centerX - avatarRadius, centerY - avatarRadius, avatarSize, avatarSize);
+                        resolve(canvas.toDataURL('image/jpeg')); // 输出为JPEG格式
+                    };
+                    overlayImage.onerror = (err) => {
+                        reject('Overlay image failed to load.');
+                    };
+                } catch (error) {
+                    reject(error);
+                }
+            });
         }
     </script>
 </body>
